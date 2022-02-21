@@ -1,5 +1,5 @@
 # metamorphReborn
 
 Websites Scanning Tool  
-Student project for Bachelor Cybesecurite EPITA  
+Student project for Bachelor CyberSecurite EPITA  
 MessWithCode  
