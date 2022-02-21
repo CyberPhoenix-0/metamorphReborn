@@ -1,0 +1,10 @@
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\bin\Debug\metamorphGraphics.exe.config
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\bin\Debug\metamorphGraphics.exe
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\bin\Debug\metamorphGraphics.pdb
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.csprojAssemblyReference.cache
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.Properties.Resources.resources
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.csproj.GenerateResource.cache
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.csproj.CoreCompileInputs.cache
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.exe
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.pdb
+C:\Users\julie\Documents\Projets\Mess\metamorph\metamorphGraphics\metamorphGraphics\obj\Debug\metamorphGraphics.Form1.resources
