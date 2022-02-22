@@ -1,16 +1,34 @@
-# This is a sample Python script.
+from pynput import keyboard
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def on_press(key):
+    try:
+        if key == "Key.enter":
+            print()
+            return key
+        return key
+    except AttributeError:
+        print('special key pressed: {0}'.format(key))
+        return key
+
+def on_release(key):
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+# Collect events until released
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def main():
+    key = ''
+    command = ""
+    sig = False
+    while command != "exit" and command != "quit":
+        with keyboard.Listener(
+                on_press=on_press,
+                on_release=on_release) as listener:
+            m = listener.join()
+            print(m)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()
