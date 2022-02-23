@@ -5,36 +5,29 @@ from termcolor import colored
 
 
 commandList = {}
-version = "alpha v1.0.0"
+version = "alpha v1.0.1"
+globals()["version"] = version
+globals()["listModule"] = []
+listModule = []
 globals()["loadedModule"] = None
 
 
+def printHeader():
+    header = """
+ __  __        _                                         _     
+|  \/  |  ___ | |_  __ _  _ __ ___    ___   _ __  _ __  | |__  
+| |\/| | / _ \| __|/ _` || '_ ` _ \  / _ \ | '__|| '_ \ | '_ \ 
+| |  | ||  __/| |_| (_| || | | | | || (_) || |   | |_) || | | |
+|_|  |_| \___| \__|\__,_||_| |_| |_| \___/ |_|   | .__/ |_| |_|  
+                                                 |_|             """ + str(version)
+    print(header)
 
 def printHelp(command):
     print("\r\nMetamorph V" + str(globals()["version"]) + """, Website Scanning Tool
 General help about commands
     
-    MODULE:
-        handler Scannings Modules
-        list:
-            list all modules
-        load:
-            load selected module if exists
-        help:
-            show this help or show help of specified module
-    
-    PROFILE:
-        Manage scanning profiles
-        load <profile name>:
-            load scanning profile
-        status,show:
-            show actual profile settings
-        save <new profile name>:
-            save actual settings
-        help:
-            show this help
         
-    """)
+""" + str(listModule[0].description) + '\n\n' + str(listModule[1].description))
 
 
 def printShell():
@@ -71,8 +64,14 @@ def main():
             save actual settings
         help:
             show this help""")
-
-    commandList = {"help": printHelp, "module": moduleCom.callCommand, "m": moduleCom.callCommand, "profile": profileCom.callCommand}
+    listModule.insert(0,moduleCom)
+    listModule.insert(1,profileCom)
+    command_list = {"help": printHelp,
+                    "h": printHelp,
+                    "module": moduleCom.callCommand,
+                    "m": moduleCom.callCommand,
+                    "profile": profileCom.callCommand,
+                    "p": profileCom.callCommand}
     command = ""
 
     while command != "exit" and command != "quit":
@@ -84,18 +83,17 @@ def main():
         command = command.strip()
         if len(command) != 0:
             try:
-                commandList[commandArg[0]](commandArg)
+                command_list[commandArg[0]](commandArg)
             except Exception as err:
                 print(err)
                 msgErr = colored("Command Not Recognized !" + '\nCommand : ' + str(command),'red')
                 print(msgErr)
-
-
     return 0
 
 
 
 if __name__ == '__main__':
+    printHeader()
     globals()["loadedModule"] = None
     globals()["version"] = version
     try:

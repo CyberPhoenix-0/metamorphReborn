@@ -1,10 +1,10 @@
 from module import moduleStruct
 import os
 from termcolor import colored
+import json
 
 
-
-globals()["loadedModule"] = None
+globals()["loadedModule"] = {}
 
 class commandStruct:
 
@@ -23,7 +23,6 @@ class commandStruct:
             return 0
         print(self.description)
         return 0
-
 
 
 class module(commandStruct):
@@ -59,20 +58,21 @@ class module(commandStruct):
                     if self.calledCommand[2] in moduleList.keys():
                         return self.moduleLoad(self.calledCommand[1:])
                     else:
-                        print(colored("Error : Module " + str(self.calledCommand[2]) + " does not exists.",'red'))
-                        return -1
+                        return print(colored("Error : Module " + str(self.calledCommand[2]) + " does not exists.",'red'))
                 else:
                     print(colored("Error : Module is missing",'red'))
                     return self.printHelp(None)
             elif self.calledCommand[1] == "list":
-                print(self.moduleList.keys())
-                return 0
+                return self.moduleEnumerate()
             elif self.calledCommand[1] == "run":
                 return self.moduleRun()
             elif self.calledCommand[1] == "status":
                 return self.moduleStatus()
             elif self.calledCommand[1] == "var":
                 return self.moduleVar(command[1:])
+            elif self.calledCommand[1] == "unload":
+                return self.moduleUnload(command[1:])
+
             else:
                 print("Error : \'" + str(self.calledCommand[1]) + "\' option not recognized !")
                 self.printHelp(None)
@@ -81,9 +81,32 @@ class module(commandStruct):
 
 
     def moduleLoad(self,command):
-        globals()["loadedModule"] = self.moduleList[command[1]]
-        msg = colored("Module " + globals()["loadedModule"].name + " loaded !", 'green')
-        print(msg)
+        """
+
+        :param command:
+        args of module loading, contains load in 0, moduleName in 1, and moduleArgs in 2 -> ...
+        :return:
+        """
+        if command[1] not in globals()["loadedModule"].keys():
+            globals()["loadedModule"][command[1]] = (self.moduleList[command[1]])
+            try:
+                msg = colored("Module " + globals()["loadedModule"][command[1]].name + " loaded !", 'green')
+                print(msg)
+            except:
+                msg = colored("Failed loading module " + command[1] + " !", 'red')
+                print(msg)
+        else:
+            msg = colored("Module " + globals()["loadedModule"][command[1]].name + " already loaded !", 'yellow')
+            print(msg)
+
+    def moduleUnload(self,command):
+        try:
+            del globals()["loadedModule"][command[1]]
+            msg = colored("Module " + command[1] + " unloaded !", 'green')
+            print(msg)
+        except:
+            msg = colored("Module " + command[1] + " not loaded !", 'yellow')
+            print(msg)
 
 
     def moduleRun(self):
@@ -100,7 +123,8 @@ class module(commandStruct):
         print a list of existing modules
         :return:
         """
-        for i,j in moduleList.items():
+        print(colored("Metamorph modules list :","green"))
+        for i in moduleList.keys():
             print(str(i))
 
     def moduleStatus(self):
@@ -117,7 +141,7 @@ class module(commandStruct):
                 print(str(i) + " : " + str(j))
 
     def moduleVar(self,command):
-        if globals()["loadedModule"] is None:
+        if len(globals()["loadedModule"]) == 0:
             print(colored("No Module Selected !\r\nSelect one first before changing settings.",'red'))
             return -1
         else:
@@ -151,18 +175,24 @@ class profile(commandStruct):
         commandStruct.__init__(self, name, desc)
 
     def callCommand(self, command):
+        """
+        General handler of parameters
+        :param command:
+        Original command split by ' '
+        :return:
+        """
         self.calledCommand = command
         if len(self.calledCommand) > 1:
             if self.calledCommand[1] == "help":
-                self.printHelp()
+                self.printHelp(None)
             elif self.calledCommand[1] == "load":
                 self.profileLoad(self.calledCommand[1:])
             elif self.calledCommand[1] == "show":
                 self.profileShow()
             else:
-                self.printHelp()
+                self.printHelp(None)
         else:
-            self.printHelp()
+            self.printHelp(None)
 
     def profileLoad(self,command):
         """
@@ -187,13 +217,19 @@ class profile(commandStruct):
         No need of arguments
         :return:
         """
-        print("Profile Show")
+        for i,j in globals()["loadedModule"].items():
+            trayCount = len(j.printName)
+            print(colored(j.printName,'green'))
+            print(colored('-'*trayCount,'green'))
+            print(j.printArgs())
+            print('\r\n')
+
 
 
 
 moduleList = {}
 def initVar():
-    netscan = moduleStruct("netscan","modules/netScan.py","""
+    netscan = moduleStruct("netscan","Metamorph NetScan Module V1.0","modules/netScan.py","""
 Metamorph NetScan Module
 V1.0
 Argument : host, FromPort, ToPort, debugLevel
