@@ -5,7 +5,7 @@ from termcolor import colored
 
 
 commandList = {}
-version = "alpha v1.0.2"
+version = "alpha v1.0.3"
 globals()["version"] = version
 globals()["listModule"] = []
 listModule = []
