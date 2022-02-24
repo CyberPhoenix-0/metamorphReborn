@@ -29,6 +29,13 @@ if __name__=="__main__":
     """
     Input : url en argv[1] de la forme http(s)://(www.)site.com => ()=optionnel
     Output : fichier xml "whois_url.xml" avec des "_" a la place des "." et des "-"
+    Metamorph WhoIs Module
+    V1.0
+    Argument : host
+    Desc : Network Scanning tool, url in argument
+    Syntaxe : module whois <ulr>
+
+
     """
     main()
 
