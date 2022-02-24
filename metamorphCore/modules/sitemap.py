@@ -60,9 +60,9 @@ if __name__ == '__main__':
     Output : Fichier XML "url.xml" avec des "_" a la place des "." et des "-"
     Metamorph SiteMap Module
     V1.0
-    Argument : xmlFile
+    Argument : url
     Desc : SiteMap Scanning tool, xmlFile in argument
-    Syntaxe : module sitemap <xmlFile>
+    Syntaxe : module sitemap <url>
     """
     urls=argv[1]
     sitemap=mapping([urls],base_url=urls).main()
