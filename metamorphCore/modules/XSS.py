@@ -79,6 +79,13 @@ if __name__=="__main__":
     """
     Input : En argv[1] : Le fichier xml généré par sitemap.py
     Output : Fichier xml "XSS_url.xml" avec des "_" a la place des "." et des "-"
+    Metamorph XSS Module
+    V1.0
+    Argument : xmlFile
+    Desc : XSS Scanning tool, xmlFile in argument
+    Syntaxe : module xss <xmlFile>
+
+
     """
     load_xml(argv[1])
     url=argv[1]
