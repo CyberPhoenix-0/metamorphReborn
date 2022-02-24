@@ -5,11 +5,10 @@ from termcolor import colored
 
 
 commandList = {}
-version = "alpha v1.0.1"
+version = "alpha v1.0.2"
 globals()["version"] = version
 globals()["listModule"] = []
 listModule = []
-globals()["loadedModule"] = None
 
 
 def printHeader():
@@ -76,18 +75,20 @@ def main():
 
     while command != "exit" and command != "quit":
         printShell()
-
         command = input()
         command = command.lower()
-        commandArg = command.split(' ')
         command = command.strip()
+        commandArg = command.split(' ')
         if len(command) != 0:
             try:
                 command_list[commandArg[0]](commandArg)
-            except Exception as err:
-                print(err)
-                msgErr = colored("Command Not Recognized !" + '\nCommand : ' + str(command),'red')
+            except KeyError:
+                msgErr = colored("Command Not Recognized !" + '\nCommand : ' + str(command), 'red')
                 print(msgErr)
+            except Exception as err:
+                msgErr = colored("An error Occured !" + '\nCommand : ' + str(command) + "\nException : " + str(err), 'red')
+                print(msgErr)
+
     return 0
 
 
@@ -99,5 +100,5 @@ if __name__ == '__main__':
     try:
         main()
     except:
-        print(colored("\r\nGoodBye !",'green'))
+        print(colored("\r\nGoodBye !", 'green'))
         sys.exit(0)
