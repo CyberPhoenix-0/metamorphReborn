@@ -1,10 +1,6 @@
-import termcolor
-
 from module import moduleStruct
 import json
 import message
-import os
-import sys
 
 success = message.Success()
 warnings = message.Warning()
@@ -35,16 +31,13 @@ class commandStruct:
             return 0
 
 
-class moduleCommand(commandStruct):
+class module(commandStruct):
 
-
+    moduleList = {}
 
     def __init__(self, name, desc):
-        if globals()["initedVar"]:
-            commandStruct.__init__(self, name, desc)
-            globals()["moduleCommandInstance"] = self
-        else:
-            errors.getMessage("Modules not inited")
+        commandStruct.__init__(self, name, desc)
+        self.moduleList = initVar()
 
     def callCommand(self, command):
         """
@@ -85,22 +78,19 @@ class moduleCommand(commandStruct):
             elif arg1 == "var":
                 selectedModuleName = self.calledCommand[2]
                 if len(self.calledCommand) > 2:  #if module is given
-                    if selectedModuleName in moduleList.keys():  #if module exists
-                        if selectedModuleName in globals()["loadedModule"].keys():
-                            selectedModuleObject = globals()["loadedModule"][selectedModuleName]
-                            if len(self.calledCommand) > 3:  # if parameter name is given
-                                paraName = self.calledCommand[3]
-                                if paraName in selectedModuleObject.argList.keys():  #if parameter exists in module ArgList
-                                    if len(self.calledCommand) > 4:  #if value given
-                                        return self.moduleVar(command)
-                                    else:
-                                        print(warnings.getMessage("Value not specified !"))
+                    if selectedModuleName in self.moduleList.keys():  #if module exists
+                        selectedModuleObject = globals()["loadedModule"][selectedModuleName]
+                        if len(self.calledCommand) > 3:  # if parameter name is given
+                            paraName = self.calledCommand[3]
+                            if paraName in selectedModuleObject.argList.keys():  #if parameter exists in module ArgList
+                                if len(self.calledCommand) > 4:  #if value given
+                                    return self.moduleVar(command)
                                 else:
-                                    print(errors.getMessage("Parameter \'" + str(paraName) + "\' does not belongs to " + selectedModuleName + " module"))
+                                    print(warnings.getMessage("Value not specified !"))
                             else:
-                                print(warnings.getMessage("Missing Parameter Name !"))
+                                print(errors.getMessage("Parameter \'" + str(paraName) + "\' does not belongs to " + selectedModuleName + " module"))
                         else:
-                            print(errors.getMessage("Module selected not loaded"))
+                            print(warnings.getMessage("Missing Parameter Name !"))
                     else:
                         print(errors.getMessage("Module \'" + str(self.calledCommand[2]) + "\' does not exists"))
                 else:
@@ -123,7 +113,7 @@ class moduleCommand(commandStruct):
         :return:
         """
         if command[2] not in globals()["loadedModule"].keys():
-            globals()["loadedModule"][command[2]] = (moduleList[command[2]])
+            globals()["loadedModule"][command[2]] = (self.moduleList[command[2]])
             try:
                 print(success.getMessage("Module " + globals()["loadedModule"][command[2]].name + " loaded !"))
             except KeyError:
@@ -231,11 +221,10 @@ class moduleCommand(commandStruct):
 
 
 
-class profileCommand(commandStruct):
+class profile(commandStruct):
 
     def __init__(self, name, desc):
         commandStruct.__init__(self, name, desc)
-        globals()["profileCommandInstance"] = self
 
     def callCommand(self, command):
         """
@@ -244,19 +233,16 @@ class profileCommand(commandStruct):
         Original command split by ' '
         :return:
         """
-        if len(command) > 1:
-            if command[1] == "help":  #handle Help command
+        self.calledCommand = command
+        if len(self.calledCommand) > 1:
+            if self.calledCommand[1] == "help":  #handle Help command
                 self.printHelp(None)
-            elif command[1] == "load":  #handler load command
-                if len(command) > 2:
-                    self.profileLoad(command)
-                else:
-                    print(warnings.getMessage("Missing ScanProfileName parameter !"))
-
-            elif command[1] == "show":  #handle show command
+            elif self.calledCommand[1] == "load":  #handler load command
+                self.profileLoad(self.calledCommand[1:])
+            elif self.calledCommand[1] == "show":  #handle show command
                 self.profileShow()
-            elif command[1] == "export":
-                if len(command) > 2:
+            elif self.calledCommand[1] == "export":
+                if len(self.calledCommand) > 2:
                     self.profileExport(command[1:])
                 else:
                     print(warnings.getMessage("Missing newProfileName parameter !"))
@@ -272,24 +258,16 @@ class profileCommand(commandStruct):
         profile to load in command[1]
         :return:
         """
-        try:
-            profilePath = "profiles/" + str(command[2])
-            print(profilePath)
-            profileFile = open(profilePath, 'r')
-            jsonConfig = json.load(profileFile)
-            if len(jsonConfig) > 2:
-                for i in range(1, len(jsonConfig)):
-                    varCommand = "m var " + jsonConfig[i][0]
-                    argDico = jsonConfig[i][1]
-                    for arg, val in argDico.items():
-                        globals()["moduleCommandInstance"]
-                        varCommand = varCommand + " " + arg + " " + str(val)
-                        globals()["moduleCommandInstance"].moduleVar(varCommand)
+        print("Profile Load  " + str(command))
 
-            else:
-                print(errors.getMessage("Invalid Profile"))
-        except (FileNotFoundError):
-            print(errors.getMessage("Profile not found, choose an existing file in profiles/ directory"))
+    def profileSave(self, command):
+        """
+
+        :param command:
+        profile to save in command[1]
+        :return:
+        """
+        print("Profile List  " + str(command))
 
     def profileShow(self):
         """
@@ -299,8 +277,8 @@ class profileCommand(commandStruct):
         if len(globals()["loadedModule"]) != 0:
             for i, j in globals()["loadedModule"].items():
                 trayCount = len(j.printName)
-                print(termcolor.colored(j.printName, "green"))
-                print(termcolor.colored('-'*trayCount, "green"))
+                print(success.getMessage(j.printName))
+                print(success.getMessage('-'*trayCount))
                 print(j.getStrPrintArgs())
                 print('\r\n')
         else:
@@ -314,84 +292,29 @@ class profileCommand(commandStruct):
         :return:
         """
         if len(globals()["loadedModule"]) != 0:
-            try:
-                profileConfig = [command[1]]
-                for i, j in globals()["loadedModule"].items():
-                    profileConfig.append((i, j.argList))
-                jsonProfileConfig = json.dumps(profileConfig, sort_keys=True, indent=4)
-                profilePath = open("profiles/" + str(profileConfig[0]) + ".json", 'w')
-                profilePath.write(jsonProfileConfig)
-                print(success.getMessage("Exported " + str(profileConfig[0])))
-            except (FileExistsError, FileNotFoundError):
-                return print(errors.getMessage("Can't write profile Config"))
-            except Exception as err:
-                return print(errors.getMessage(str("Fatal Error Occured " + err)))
+            moduleLoadedList = [command[1]]
+            for i, j in globals()["loadedModule"].items():
+                moduleLoadedList.append((i, j.argList))
+
+            print(json.dumps(moduleLoadedList, sort_keys=True, indent=4))
         else:
             print(warnings.getMessage("No module Loaded !"))
 
 
 moduleList = {}
-globals()
+def initVar():
+    netscan = moduleStruct("netscan", "Metamorph NetScan Module V1.0", "modules/netScan.py", """
+Metamorph NetScan Module
+V1.0
+Argument : host, FromPort, ToPort, debugLevel
+Desc : Network Scanning tool, host in argument, fromPort and toPort argument optional. If fromPort and toPort specified, both needs to be int. If not, netScan use 0 and 1000 by default
+Syntaxe : module netscan <host> [<fromPort> <toPort> <debug lvl>]
+Info : fromPort and toPort need to be specified to use debug
 
+""", {"rhost": "127.0.0.1", "fromport": 0, "toport": 1000, "debuglevel": 0})
+    moduleList["netscan"] = netscan
 
-def initModuleLoading():
-    try:
-        files = os.listdir("moduleConfig/")
-        holder = {}
-        for file in files:
-            path = "moduleConfig/" + file
-            jsonFile = open(path, "r")
-            moduleConfig = json.load(jsonFile)
-            holder[moduleConfig[0]] = moduleStruct(name=moduleConfig[0], printName=moduleConfig[1],
-                                                   path=moduleConfig[2], desc=moduleConfig[3],
-                                                   args=moduleConfig[4])
-            initVar(holder[moduleConfig[0]])
-        globals()["initedVar"] = True
-    except FileNotFoundError:
-        print(errors.getMessage("Can't open module Configs directory"))
-        sys.exit(-1)
-
-
-def initVar(module):
-    if module is not None:
-        moduleList[module.name] = module
-        return 0
-    else:
-        netscan = moduleStruct("netscan", "Metamorph NetScan Module V1.0", "modules/netScan.py", """
-    Metamorph NetScan Module
-    V1.0
-    Argument : host, FromPort, ToPort, debugLevel
-    Desc : Network Scanning tool, host in argument, fromPort and toPort argument optional. If fromPort and toPort specified, both needs to be int. If not, netScan use 0 and 1000 by default
-    Syntaxe : module netscan <host> [<fromPort> <toPort> <debug lvl>]
-    Info : fromPort and toPort need to be specified to use debug
-    
-    """, {"rhost": "127.0.0.1", "fromport": 0, "toport": 1000, "debuglevel": 0})
-        moduleList["netscan"] = netscan
-
-        sitemap = moduleStruct("sitemap", "Metamorph SiteMap Module V1.0", "modules/sitemap.py", """
-        Input : argv[1]=URL a scanner
-        Output : Fichier XML "url.xml" avec des "_" a la place des "." et des "-"
-        Metamorph SiteMap Module
-        V1.0
-        Argument : url
-        Desc : SiteMap Scanning tool, xmlFile in argument
-        Syntaxe : module sitemap <url>
-    
-            """, {"url": "https://google.com"})
-        moduleList["sitemap"] = sitemap
-
-        whois = moduleStruct("whois", "Metamorph WhoIs Module V1.0", "modules/whois.py", """
-    Input : url en argv[1] de la forme http(s)://(www.)site.com => ()=optionnel
-    Output : fichier xml "whois_url.xml" avec des "_" a la place des "." et des "-"
-    Metamorph WhoIs Module
-    V1.0
-    Argument : host
-    Desc : Network Scanning tool, url in argument
-    Syntaxe : module whois <ulr>
-            """, {"url": "https://google.com"})
-        moduleList["whois"] = whois
-
-        xss = moduleStruct("xss", "Metamorph XSS Module V1.0", "modules/xss.py", """
+    xss = moduleStruct("xss", "Metamorph XSS Module V1.0", "modules/xss.py", """
     Input : En argv[1] : Le fichier xml généré par sitemap.py
     Output : Fichier xml "XSS_url.xml" avec des "_" a la place des "." et des "-"
     Metamorph XSS Module
@@ -399,7 +322,32 @@ def initVar(module):
     Argument : xmlFile
     Desc : XSS Scanning tool, xmlFile in argument. XMLFile can be generated by sitemap.py
     Syntaxe : module xss <xmlFile>
-            """, {"xml": "filePath"})
-        moduleList["xss"] = xss
+    
+    """, {"xml": "filePath"})
+    moduleList["xss"] = xss
 
-        return moduleList
+    sitemap = moduleStruct("sitemap", "Metamorph SiteMap Module V1.0", "modules/sitemap.py", """
+    Input : argv[1]=URL a scanner
+    Output : Fichier XML "url.xml" avec des "_" a la place des "." et des "-"
+    Metamorph SiteMap Module
+    V1.0
+    Argument : url
+    Desc : SiteMap Scanning tool, xmlFile in argument
+    Syntaxe : module sitemap <url>
+    
+    """, {"url": "https://google.com"})
+    moduleList["sitemap"] = sitemap
+
+    whois = moduleStruct("whois", "Metamorph WhoIs Module V1.0", "modules/whois.py", """
+    Input : url en argv[1] de la forme http(s)://(www.)site.com => ()=optionnel
+    Output : fichier xml "whois_url.xml" avec des "_" a la place des "." et des "-"
+    Metamorph WhoIs Module
+    V1.0
+    Argument : host
+    Desc : Network Scanning tool, url in argument
+    Syntaxe : module whois <ulr>
+
+        """, {"url": "https://google.com"})
+    moduleList["whois"] = whois
+
+    return moduleList
