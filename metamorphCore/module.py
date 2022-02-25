@@ -1,8 +1,14 @@
 import os
-from termcolor import colored
+import json
+import sys
+import command
+import message
+
+success = message.Success()
+warnings = message.Warning()
+errors = message.Error()
 
 class moduleStruct:
-
     name = ""
     printName = ""
     path = ""
@@ -26,7 +32,8 @@ class moduleStruct:
         return self.description
 
     def getStrPrintArgs(self):
-        strArgs = colored("Parameter : Value\r\n-----------------\n",'green')
+        from termcolor import colored
+        strArgs = colored("Parameter : Value\r\n-----------------\n", 'green')
         for i, j in self.argList.items():
             strArgs = strArgs + str(i) + "  :  " + str(j) + "\n"
         return strArgs
@@ -36,3 +43,20 @@ class moduleStruct:
         moduleCommand = "python " + pathModule + ' ' + self.getStrCommandArgs()
         print(moduleCommand)
         os.system(moduleCommand)
+
+    def getJsonDict(self):
+        moduleLoadedList = [self.name, self.printName, self.path, self.description, self.argList]
+        return moduleLoadedList
+
+
+
+def moduleExport(moduleObject):
+    try:
+        file = open("moduleConfig/" + str(moduleObject.name) + ".json", "w")
+        jsonConfig = json.dumps(moduleObject.getJsonDict(), sort_keys=True, indent=4)
+        file.write(jsonConfig)
+        print(success.getMessage("Exporting " + str(moduleObject.name) + ".json"))
+    except Exception as err:
+        print(errors.getMessage(str(err)))
+        return err
+
