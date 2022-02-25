@@ -1,0 +1,18 @@
+[
+    "profile1",
+    [
+        "netscan",
+        {
+            "debuglevel": 0,
+            "fromport": 0,
+            "rhost": "127.0.0.1",
+            "toport": 1000
+        }
+    ],
+    [
+        "xss",
+        {
+            "xml": "filePath"
+        }
+    ]
+]

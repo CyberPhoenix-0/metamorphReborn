@@ -1,0 +1,9 @@
+[
+    "whois",
+    "Metamorph WhoIs Module V1.0",
+    "modules/whois.py",
+    "\nInput : url en argv[1] de la forme http(s)://(www.)site.com => ()=optionnel\nOutput : fichier xml \"whois_url.xml\" avec des \"_\" a la place des \".\" et des \"-\"\nMetamorph WhoIs Module\nV1.0\nArgument : host\nDesc : Network Scanning tool, url in argument\nSyntaxe : module whois <ulr>\n\n        ",
+    {
+        "url": "https://google.com"
+    }
+]

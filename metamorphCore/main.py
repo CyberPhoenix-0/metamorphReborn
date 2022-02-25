@@ -1,15 +1,22 @@
-import sys,os
-from command import module,profile
+import sys
 
-from termcolor import colored
+import termcolor
+
+from command import moduleCommand, profileCommand, initModuleLoading
+import message
+
+
+
 
 
 commandList = {}
-version = "alpha v1.0.2"
+version = "alpha v1.0.4"
 globals()["version"] = version
 globals()["listModule"] = []
 listModule = []
-
+success = message.Success()
+warnings = message.Warning()
+errors = message.Error()
 
 def printHeader():
     header = """
@@ -21,7 +28,7 @@ def printHeader():
                                                  |_|             """ + str(version)
     print(header)
 
-def printHelp(command):
+def printHelp():
     print("\r\nMetamorph V" + str(globals()["version"]) + """, Website Scanning Tool
 General help about commands
     
@@ -33,14 +40,15 @@ def printShell():
     try:
         print("\nmetamorph$: ", end='')
         return 0
-    except:
+    except Exception as errShell:
+        errors.getMessage(errShell)
         return -1
 
 
 
 def main():
-
-    moduleCom = module("module", """MODULE:
+    initModuleLoading()
+    moduleCom = moduleCommand("module", """MODULE:
         Manage and Use Scannings Modules
         status:
             show settings about selected module
@@ -53,7 +61,7 @@ def main():
         help:
             show this help or show help of specified module
         """)
-    profileCom = profile("profile","""PROFILE:
+    profileCom = profileCommand("profile", """PROFILE:
         Manage scanning profiles
         load <profile name>:
             load scanning profile
@@ -63,8 +71,8 @@ def main():
             save actual settings
         help:
             show this help""")
-    listModule.insert(0,moduleCom)
-    listModule.insert(1,profileCom)
+    listModule.insert(0, moduleCom)
+    listModule.insert(1, profileCom)
     command_list = {"help": printHelp,
                     "h": printHelp,
                     "module": moduleCom.callCommand,
@@ -79,14 +87,18 @@ def main():
         command = command.lower()
         command = command.strip()
         commandArg = command.split(' ')
+        commandArg = [i for i in commandArg if i != '']
+        print(commandArg)
         if len(command) != 0:
             try:
                 command_list[commandArg[0]](commandArg)
-            except KeyError:
-                msgErr = colored("Command Not Recognized !" + '\nCommand : ' + str(command), 'red')
+
+            except Exception as error:
+                msgErr = errors.getMessage("An error Occured !" + '\nCommand : ' + str(command) + "\nException : " + str(error))
                 print(msgErr)
-            except Exception as err:
-                msgErr = colored("An error Occured !" + '\nCommand : ' + str(command) + "\nException : " + str(err), 'red')
+
+            except KeyError:
+                msgErr = errors.getMessage("Command Not Recognized !" + '\nCommand : ' + str(command))
                 print(msgErr)
 
     return 0
@@ -99,6 +111,9 @@ if __name__ == '__main__':
     globals()["version"] = version
     try:
         main()
-    except:
-        print(colored("\r\nGoodBye !", 'green'))
+    except KeyboardInterrupt:
+        print(termcolor.colored("\r\nGoodBye !", 'green'))
+        sys.exit(0)
+    except Exception as err:
+        print(errors.getMessage(err))
         sys.exit(0)
