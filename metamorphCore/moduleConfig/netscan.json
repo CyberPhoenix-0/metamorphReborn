@@ -1,0 +1,13 @@
+[
+    "netscan",
+    "Metamorph NetScan Module V1.0",
+    "modules\\netScan.py",
+    "\nMetamorph NetScan Module\nV1.0\nArgument : host, FromPort, ToPort, debugLevel\nDesc : Network Scanning tool, host in argument, fromPort and toPort argument optional. If fromPort and toPort specified, both needs to be int. If not, netScan use 0 and 1000 by default\nSyntaxe : module netscan <host> [<fromPort> <toPort> <debug lvl>]\nInfo : fromPort and toPort need to be specified to use debug\n\n",
+    {
+
+        "rhost": "127.0.0.1",
+        "fromport": 0,
+        "toport": 1000,
+        "debuglevel": 0
+    }
+]

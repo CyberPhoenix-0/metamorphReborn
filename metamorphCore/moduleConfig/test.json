@@ -1,0 +1,9 @@
+[
+    "test",
+    "Metamorph TEST Module V1.0",
+    "modules\\test.py",
+    "",
+    {
+        "arg": "str"
+    }
+]

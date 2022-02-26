@@ -1,0 +1,9 @@
+[
+    "sitemap",
+    "Metamorph SiteMap Module V1.0",
+    "modules\\sitemap.py",
+    "\nInput : argv[1]=URL a scanner\nOutput : Fichier XML \"url.xml\" avec des \"_\" a la place des \".\" et des \"-\"\nMetamorph SiteMap Module\nV1.0\nArgument : url\nDesc : SiteMap Scanning tool, xmlFile in argument\nSyntaxe : module sitemap <url>\n    \n    ",
+    {
+        "url": "https://google.com"
+    }
+]
