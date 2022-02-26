@@ -2,7 +2,7 @@ import sys
 import termcolor
 from command import moduleCommand, profileCommand, initModuleLoading
 import message
-
+import os
 
 
 commandList = {}
@@ -48,26 +48,50 @@ def main():
     moduleCom = moduleCommand("module", """MODULE:
         Manage and Use Scannings Modules
         status:
-            show settings about selected module
+            show settings about selected module. Module needs to be loaded
+            Ex:
+                m status
+                m status netscan
         load:
             load selected module if exists
+            Ex:
+                m load netscan
         run:
-            run selected module
+            run selected module or all with all option
+            Ex:
+                m run
+                m run all
+                m run netscan
         list:
             list all modules
-        help:
+            Ex:
+                m list
+        help [module]:
             show this help or show help of specified module
+            Ex:
+                m help netscan
+                m help xss
         """)
     profileCom = profileCommand("profile", """PROFILE:
         Manage scanning profiles
         load <profile name>:
-            load scanning profile
+            load scanning profile. profile name option is the name of the file with or without 
+            Ex:
+               p load fast1 
         status,show:
             show actual profile settings
+            Ex:
+                p show
+                p status
         export <new profile name>:
             save actual settings
+            Ex:
+                p export myCrazyProfile
         help:
-            show this help""")
+            show this help
+            Ex:
+                p help
+        """)
     listModule.insert(0, moduleCom)
     listModule.insert(1, profileCom)
     command_list = {"help": printHelp,
