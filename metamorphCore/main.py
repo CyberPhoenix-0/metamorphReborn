@@ -13,7 +13,7 @@ listModule = []
 success = message.Success()
 warnings = message.Warning()
 errors = message.Error()
-
+os.mkdir("results")
 
 def printHeader():
     header = """
