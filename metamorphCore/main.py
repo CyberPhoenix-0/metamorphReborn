@@ -2,7 +2,7 @@ import sys
 import termcolor
 from command import moduleCommand, profileCommand, initModuleLoading
 import message
-
+import os
 
 
 commandList = {}
