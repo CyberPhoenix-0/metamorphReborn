@@ -13,7 +13,8 @@ listModule = []
 success = message.Success()
 warnings = message.Warning()
 errors = message.Error()
-os.mkdir("results")
+if "results" not in os.listdir():
+    os.mkdir("results")
 
 def printHeader():
     header = """
