@@ -1,5 +1,4 @@
 import termcolor
-
 from module import moduleStruct
 import json
 import message
@@ -23,7 +22,7 @@ class commandStruct:
 
 
     def printHelp(self, moduleSelected):
-        if moduleSelected is None:
+        if moduleSelected is not None:
             if moduleSelected in moduleList.keys():
                 print(moduleList[moduleSelected].getHelp())
                 return 0
@@ -105,8 +104,6 @@ class moduleCommand(commandStruct):
                         print(errors.getMessage("Module \'" + str(self.calledCommand[2]) + "\' does not exists"))
                 else:
                     print(warnings.getMessage("Missing \'module\'"))
-
-
             elif arg1 == "unload":
                 return self.moduleUnload(command[1:])
             else:
@@ -119,7 +116,7 @@ class moduleCommand(commandStruct):
     def moduleLoad(self, command):
         """
         :param command:
-        args of module loading, contains load in 0, moduleName in 1, and moduleArgs in 2 -> ...
+        args of module loading, contains load in 1, moduleName in 2, and moduleArgs in 3 -> ...
         :return:
         """
         if command[2] not in globals()["loadedModule"].keys():
@@ -156,7 +153,7 @@ class moduleCommand(commandStruct):
         module param can be 'name of module' to run or 'all' to run all modules loaded
         :return:
         """
-        if len(globals()["loadedModule"]) > 1:
+        if len(globals()["loadedModule"]) > 0:
             if moduleToRun == "all":
                 for moduleToRun in globals()["loadedModule"].values():
                     moduleToRun.run()
@@ -184,22 +181,26 @@ class moduleCommand(commandStruct):
         print settings of current module
         :return:
         """
-        if globals()["loadedModule"] is None or len(globals()["loadedModule"]) == 0:
-            msg = warnings.getMessage("No Module Selected !")
-            print(msg)
-            return 0
-        else:
-            if command is None:
-                for i, j in globals()["loadedModule"].items():
-                    print(str(j.getStrPrintArgs()))
-                return 0
-            else:
+        if command is not None:
+            if command[2] in moduleList.keys():
                 if command[2] in globals()["loadedModule"].keys():
                     print(globals()["loadedModule"][command[2]].getStrPrintArgs())
                     return 0
                 else:
                     print(warnings.getMessage("Module specified not loaded !"))
-
+                    return -1
+            else:
+                print(errors.getMessage("Module selected does not exists"))
+                return -1
+        else:
+            if globals()["loadedModule"] is None or len(globals()["loadedModule"]) == 0:
+                msg = warnings.getMessage("No Module loaded !")
+                print(msg)
+                return 0
+            else:
+                for i, j in globals()["loadedModule"].items():
+                    print(str(j.getStrPrintArgs()))
+                return 0
 
     def moduleVar(self, command):
         """
@@ -207,7 +208,6 @@ class moduleCommand(commandStruct):
         :param command:
         :return:
         """
-        print(command)
         selectedModule = command[2]
         selectedOption = command[3]
         OldValueType = type(globals()["loadedModule"][selectedModule].argList[selectedOption])
@@ -219,6 +219,7 @@ class moduleCommand(commandStruct):
                 else:
                     NewValue = command[4]
                 globals()["loadedModule"][selectedModule].argList[selectedOption] = NewValue
+                print(success.getMessage("Successfully updated " + str(selectedOption) + " to " + str(NewValue)))
             except (ValueError, TypeError):
                 print(errors.getMessage("Parameter " + str(selectedOption) + " need " + str(OldValueType) + " but " + str(NewValueType) + " given"))
                 return -1
@@ -252,18 +253,25 @@ class profileCommand(commandStruct):
                     self.profileLoad(command)
                 else:
                     print(warnings.getMessage("Missing ScanProfileName parameter !"))
-
-            elif command[1] == "show":  #handle show command
+                    return -1
+            elif command[1] == "show" or command[1] == "status":  #handle show command
                 self.profileShow()
+            elif command[1] == "save":
+                print(warnings.getMessage("Did you mean   p export ?"))
+                return 0
             elif command[1] == "export":
                 if len(command) > 2:
                     self.profileExport(command[1:])
                 else:
                     print(warnings.getMessage("Missing newProfileName parameter !"))
+                    return -1
             else:
-                self.printHelp(self.calledCommand[1])
+                print(errors.getMessage('\'' + str(command[1]) + "\' option not recognized"))
+                self.printHelp(None)
+                return -1
         else:
             self.printHelp(None)
+            return 0
 
     def profileLoad(self, command):
         """
@@ -273,23 +281,34 @@ class profileCommand(commandStruct):
         :return:
         """
         try:
-            profilePath = "profiles/" + str(command[2])
-            print(profilePath)
+            if ".json" in str(command[2]):
+                profilePath = "profiles/" + str(command[2])
+            else:
+                profilePath = "profiles/" + str(command[2] + ".json")
             profileFile = open(profilePath, 'r')
             jsonConfig = json.load(profileFile)
-            if len(jsonConfig) > 2:
+            if len(jsonConfig) >= 2:
                 for i in range(1, len(jsonConfig)):
-                    varCommand = "m var " + jsonConfig[i][0]
+                    moduleName = jsonConfig[i][0]
+                    loadCommand = ["m", "load", jsonConfig[i][0]]
+                    if moduleName not in globals()["loadedModule"].keys():
+                        globals()["moduleCommandInstance"].moduleLoad(loadCommand)
+                    else:
+                        print(warnings.getMessage(str(moduleName) + " module already loaded, updating parameters"))
+                        return -1
                     argDico = jsonConfig[i][1]
                     for arg, val in argDico.items():
-                        globals()["moduleCommandInstance"]
-                        varCommand = varCommand + " " + arg + " " + str(val)
+                        varCommand = ["m", "var", jsonConfig[i][0], arg, str(val)]
                         globals()["moduleCommandInstance"].moduleVar(varCommand)
-
             else:
                 print(errors.getMessage("Invalid Profile"))
-        except (FileNotFoundError):
+                return -1
+        except FileNotFoundError:
             print(errors.getMessage("Profile not found, choose an existing file in profiles/ directory"))
+            return -1
+        except Exception as errMessage:
+            print(errors.getMessage("An error occured while loading profile!\n" + str(errMessage)))
+            return -1
 
     def profileShow(self):
         """
@@ -303,8 +322,10 @@ class profileCommand(commandStruct):
                 print(termcolor.colored('-'*trayCount, "green"))
                 print(j.getStrPrintArgs())
                 print('\r\n')
+                return 0
         else:
             print(warnings.getMessage("No module Loaded !"))
+            return -1
 
     def profileExport(self, command):
         """
@@ -318,16 +339,23 @@ class profileCommand(commandStruct):
                 profileConfig = [command[1]]
                 for i, j in globals()["loadedModule"].items():
                     profileConfig.append((i, j.argList))
-                jsonProfileConfig = json.dumps(profileConfig, sort_keys=True, indent=4)
-                profilePath = open("profiles/" + str(profileConfig[0]) + ".json", 'w')
+                jsonProfileConfig = json.dumps(profileConfig, indent=4)
+                if ".json" not in profileConfig[0]:
+                    profilePath = open("profiles/" + str(profileConfig[0]) + ".json", 'w')
+                else:
+                    profilePath = open("profiles/" + str(profileConfig[0]), 'w')
                 profilePath.write(jsonProfileConfig)
                 print(success.getMessage("Exported " + str(profileConfig[0])))
+                return 0
             except (FileExistsError, FileNotFoundError):
-                return print(errors.getMessage("Can't write profile Config"))
+                print(errors.getMessage("Can't write profile Config"))
+                return -1
             except Exception as err:
-                return print(errors.getMessage(str("Fatal Error Occured " + err)))
+                print(errors.getMessage(str("Fatal Error Occured " + err)))
+                return -1
         else:
             print(warnings.getMessage("No module Loaded !"))
+            return 0
 
 
 moduleList = {}
@@ -347,6 +375,8 @@ def initModuleLoading():
                                                    args=moduleConfig[4])
             initVar(holder[moduleConfig[0]])
         globals()["initedVar"] = True
+        print(termcolor.colored("[*]Success : Loaded Module Database !", 'blue'))
+        return 0
     except FileNotFoundError:
         print(errors.getMessage("Can't open module Configs directory"))
         sys.exit(-1)
@@ -401,5 +431,4 @@ def initVar(module):
     Syntaxe : module xss <xmlFile>
             """, {"xml": "filePath"})
         moduleList["xss"] = xss
-
         return moduleList

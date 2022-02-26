@@ -1,7 +1,7 @@
 import os
 import json
-import sys
-import command
+import subprocess
+import pathlib
 import message
 
 success = message.Success()
@@ -39,10 +39,17 @@ class moduleStruct:
         return strArgs
 
     def run(self):
-        pathModule = self.path
-        moduleCommand = "python " + pathModule + ' ' + self.getStrCommandArgs()
-        print(moduleCommand)
-        os.system(moduleCommand)
+        try:
+            pathModule = self.path
+            actualPath = str(pathlib.Path(__file__).parent.absolute())
+            moduleCommand = "python " + str(actualPath) + '\\' + pathModule + ' ' + self.getStrCommandArgs()
+            moduleCommand.replace('\\', '/')
+            os.system(moduleCommand)
+            print(success.getMessage("Report wrote in results/ directory"))
+        except Exception as err:
+            print(errors.getMessage("Problem occured when running " + self.name + " module.\n" + str(err)))
+
+
 
     def getJsonDict(self):
         moduleLoadedList = [self.name, self.printName, self.path, self.description, self.argList]
@@ -53,7 +60,7 @@ class moduleStruct:
 def moduleExport(moduleObject):
     try:
         file = open("moduleConfig/" + str(moduleObject.name) + ".json", "w")
-        jsonConfig = json.dumps(moduleObject.getJsonDict(), sort_keys=True, indent=4)
+        jsonConfig = json.dumps(moduleObject.getJsonDict(), indent=4)
         file.write(jsonConfig)
         print(success.getMessage("Exporting " + str(moduleObject.name) + ".json"))
     except Exception as err:

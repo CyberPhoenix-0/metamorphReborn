@@ -1,26 +1,19 @@
 import sys
-
 import termcolor
-
 from command import moduleCommand, profileCommand, initModuleLoading
 import message
 
 
 
-
-
 commandList = {}
-<<<<<<< HEAD
-version = "alpha v1.0.4"
-=======
-version = "alpha v1.0.3"
->>>>>>> 87bf79f54fae554b5f7b97aecd33738059882dc0
+version = "alpha v1.0.5"
 globals()["version"] = version
 globals()["listModule"] = []
 listModule = []
 success = message.Success()
 warnings = message.Warning()
 errors = message.Error()
+
 
 def printHeader():
     header = """
@@ -32,7 +25,7 @@ def printHeader():
                                                  |_|             """ + str(version)
     print(header)
 
-def printHelp():
+def printHelp(command):
     print("\r\nMetamorph V" + str(globals()["version"]) + """, Website Scanning Tool
 General help about commands
     
@@ -71,7 +64,7 @@ def main():
             load scanning profile
         status,show:
             show actual profile settings
-        save <new profile name>:
+        export <new profile name>:
             save actual settings
         help:
             show this help""")
@@ -92,18 +85,17 @@ def main():
         command = command.strip()
         commandArg = command.split(' ')
         commandArg = [i for i in commandArg if i != '']
-        print(commandArg)
         if len(command) != 0:
             try:
                 command_list[commandArg[0]](commandArg)
-
+            except KeyError:
+                msgErr = errors.getMessage("Command Not Recognized !" + '\nCommand : ' + str(command))
+                print(msgErr)
             except Exception as error:
                 msgErr = errors.getMessage("An error Occured !" + '\nCommand : ' + str(command) + "\nException : " + str(error))
                 print(msgErr)
 
-            except KeyError:
-                msgErr = errors.getMessage("Command Not Recognized !" + '\nCommand : ' + str(command))
-                print(msgErr)
+
 
     return 0
 
