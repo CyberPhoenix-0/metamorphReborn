@@ -128,3 +128,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#dev modules
+modules/test.py
+modules/test2.py
