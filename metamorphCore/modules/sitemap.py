@@ -20,16 +20,22 @@ class mapping:
                 path = urljoin(url, path)
             all_links.append(path)
         return all_links
-
+        
     def find_links(self, url):
         html = requests.get(url).text
         for url in self.get_all_links(url, html):
             if url not in self.already_visited and url not in self.next_a_visiter:
-                if urlparse(url).netloc=='':
-                    urltmp=urljoin(self.base_url,url)
-                if urlparse(urltmp).netloc==urlparse(self.base_url).netloc:
+                if urlparse(url).netloc!='':
+                    if urlparse(self.base_url).netloc in urlparse(url).netloc:
+                        self.next_a_visiter.append(url)
+                        self.final.append(url)
+                    else:
+                        if url not in self.already_visited and self.next_a_visiter:
+                            print(url+" out of scope")
+                else:
                     self.next_a_visiter.append(url)
                     self.final.append(url)
+
 
     def main(self):
         while self.next_a_visiter!=[]:
@@ -40,7 +46,6 @@ class mapping:
             except:
                 continue
             self.already_visited.append(url)
-
         return self.final
 
 def generate_xml(url,resultat):
@@ -55,11 +60,6 @@ def generate_xml(url,resultat):
     print(f'[*] XML generated : {filename}.xml')
 
 if __name__ == '__main__':
-    """
-    Input : argv[1]=URL a scanner
-    Output : Fichier XML "url.xml" avec des "_" a la place des "." et des "-"
-
-    """
     urls=argv[1]
     sitemap=mapping([urls],base_url=urls).main()
     sitemap.append("")
