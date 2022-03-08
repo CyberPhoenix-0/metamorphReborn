@@ -38,6 +38,14 @@ def generate_xml(vuln_lfi,no_lfi):
 
 
 if __name__=='__main__':
+    """
+    Metamorph LFI Vulnerabilities Detection
+
+    Argument : URL.xml
+    Desc : Find LFI vulnerabilities in urls in URL.xml 
+    Syntaxe : module lfi <url.xml>
+    Info: XML generated will contains all urls vulnerable in <url>, payloads used in <payload> and the number of LFI found in <Number>
+    """
     all_url=load_xml(argv[1])
     vuln_lfi=[]
     for i in all_url:

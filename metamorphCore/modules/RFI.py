@@ -36,6 +36,14 @@ def generate_xml(vuln_rfi,no_rfi):
 
 
 if __name__=='__main__':
+    """
+    Metamorph LFI Vulnerabilities Detection
+
+    Argument : argv[1] : Le fichier xml généré par sitemap.py
+    Desc : Find RFI vulnerabilities in urls in URL.xml 
+    Syntaxe : module rfi <url.xml>
+    Info: XML generated will contains all urls vulnerable in <url>, payloads used in <payload> and the number of RFI found in <Number>
+    """
     all_url=load_xml(argv[1])
     vuln_rfi=[]
     for i in all_url:
