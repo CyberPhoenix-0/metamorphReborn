@@ -1,12 +1,11 @@
 import sys
 import termcolor
-from command import moduleCommand, profileCommand, initModuleLoading
+from command import moduleCommand, profileCommand, initModuleLoading, sysCommand
 import message
 import os
 
-
 commandList = {}
-version = "alpha v1.0.5"
+version = "V1.0.0"
 globals()["version"] = version
 globals()["listModule"] = []
 listModule = []
@@ -16,15 +15,17 @@ errors = message.Error()
 if "results" not in os.listdir():
     os.mkdir("results")
 
+
 def printHeader():
     header = """
  __  __        _                                         _     
 |  \/  |  ___ | |_  __ _  _ __ ___    ___   _ __  _ __  | |__  
 | |\/| | / _ \| __|/ _` || '_ ` _ \  / _ \ | '__|| '_ \ | '_ \ 
-| |  | ||  __/| |_| (_| || | | | | || (_) || |   | |_) || | | |
+| |  | ||  __/| |_| (_| || | | | | || (_) || |   | |_) || | | | 
 |_|  |_| \___| \__|\__,_||_| |_| |_| \___/ |_|   | .__/ |_| |_|  
                                                  |_|             """ + str(version)
     print(header)
+
 
 def printHelp(command):
     print("\r\nMetamorph V" + str(globals()["version"]) + """, Website Scanning Tool
@@ -41,7 +42,6 @@ def printShell():
     except Exception as errShell:
         errors.getMessage(errShell)
         return -1
-
 
 
 def main():
@@ -93,14 +93,17 @@ def main():
             Ex:
                 p help
         """)
+    sysCom = sysCommand("sys", """""")
     listModule.insert(0, moduleCom)
     listModule.insert(1, profileCom)
+    listModule.insert(2, sysCom)
     command_list = {"help": printHelp,
                     "h": printHelp,
                     "module": moduleCom.callCommand,
                     "m": moduleCom.callCommand,
                     "profile": profileCom.callCommand,
-                    "p": profileCom.callCommand}
+                    "p": profileCom.callCommand,
+                    "sys": sysCom.callCommand}
     command = ""
 
     while command != "exit" and command != "quit":
@@ -117,13 +120,11 @@ def main():
                 msgErr = errors.getMessage("Command Not Recognized !" + '\nCommand : ' + str(command))
                 print(msgErr)
             except Exception as error:
-                msgErr = errors.getMessage("An error Occured !" + '\nCommand : ' + str(command) + "\nException : " + str(error))
+                msgErr = errors.getMessage(
+                    "An error Occured !" + '\nCommand : ' + str(command) + "\nException : " + str(error))
                 print(msgErr)
 
-
-
     return 0
-
 
 
 if __name__ == '__main__':

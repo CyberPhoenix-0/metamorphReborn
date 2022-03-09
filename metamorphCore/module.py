@@ -1,6 +1,5 @@
 import os
 import json
-import subprocess
 import pathlib
 import message
 
@@ -41,14 +40,18 @@ class moduleStruct:
     def run(self):
         try:
             pathModule = self.path
-            actualPath = str(pathlib.Path(__file__).parent.absolute())
-            moduleCommand = "python " + str(actualPath) + '\\' + pathModule + ' ' + self.getStrCommandArgs()
-            moduleCommand.replace('\\', '/')
-            os.system(moduleCommand)
-            print(success.getMessage("Report wrote in results/ directory"))
+            if ".py" in pathModule:
+                actualPath = str(pathlib.Path(__file__).parent.absolute())
+                moduleCommand = "python3 " + str(actualPath) + '' + pathModule + ' ' + self.getStrCommandArgs()
+                os.system(moduleCommand)
+                print(success.getMessage("Report wrote in results/ directory"))
+            else:
+                actualPath = str(pathlib.Path(__file__).parent.absolute())
+                moduleCommand = str(actualPath) + '' + pathModule + ' ' + self.getStrCommandArgs()
+                os.system(moduleCommand)
         except Exception as err:
             print(errors.getMessage("Problem occured when running " + self.name + " module.\n" + str(err)))
-
+            return err
 
 
     def getJsonDict(self):

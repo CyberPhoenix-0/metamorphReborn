@@ -1,0 +1,9 @@
+[
+    "rfi",
+    "Metamorph RFI Module V1.0",
+    "modules\\RFI.py",
+    "\nSyntaxe : module rfi <url.xml>\nInfo: XML generated will contains all urls vulnerable in <url>, payloads used in <payload> and the number of RFI found in <Number>\n    \n    ",
+    {
+        "urlXML": "xmlFileOfUrl"
+    }
+]
