@@ -4,8 +4,14 @@ from bs4 import BeautifulSoup
 import xml.etree.cElementTree as ET
 from urllib.parse import urljoin
 
-#input :Fichier XML de sortie du sitemap
 
+"""
+Metamorph XSS Vulnerabilities Detection
+
+Argument : URL.xml
+Desc : Find XSS vulnerabilities in urls in URL.xml, 
+Syntaxe : module xss url.xml
+"""
 
 def get_all_forms(url):
     req=requests.get(url).content
