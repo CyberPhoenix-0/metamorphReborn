@@ -3,6 +3,15 @@ from os import popen
 import xml.etree.cElementTree as ET
 from urllib.parse import urlparse
 
+"""
+Metamorph XSS Vulnerabilities Detection
+
+Argument : URL.xml
+Desc : Find XSS vulnerabilities in urls in URL.xml, 
+Syntaxe : module xss url.xml
+"""
+
+
 def generate_xml(output,url):
     output_list=output.split('\n')
     output_list=[i for i in output_list if i!='' and i[0]!='%' and i[-1]!="-"]
