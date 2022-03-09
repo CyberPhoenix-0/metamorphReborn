@@ -1,12 +1,12 @@
 [
-    "fast1",
+    "demo",
     [
         "netscan",
         {
             "rhost": "127.0.0.1",
-            "fromport": 4443,
+            "fromport": 4442,
             "toport": 4446,
-            "debuglevel": 1
+            "debuglevel": 0
         }
     ]
 ]

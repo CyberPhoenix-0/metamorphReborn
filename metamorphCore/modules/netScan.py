@@ -1,5 +1,4 @@
 import datetime
-import pathlib
 from socket import *
 import sys
 from termcolor import colored
@@ -36,10 +35,12 @@ def scan(host, up, down, debug):
 def writeRes(openedPort, host, up, down, debug):
     nowTime = str(datetime.datetime.today().time()).split('.')[0].replace(':', '.')
     fileName = "netscan_" + str(date.today()) + '_' + str(nowTime) + ".report"
-    actualPath = str(pathlib.Path(__file__).parent.absolute())
-    filePath = os.path.join(actualPath + "\\..\\results\\", fileName)
+    actualPath = os.path.realpath(__file__)
+    filePath = os.path.join(actualPath + "/../results/", fileName)
+    print(filePath)
     header = "Metamorph Report for Netscan\nArguments:\nrhost : " + str(host) + "\nFrom Port : " + str(up) + "\nTo Port : " + str(down) + "\nDebug Level : " + str(debug)
     report = open(str(filePath), 'w')
+
     if len(openedPort) == 0:
         report.write(header + "\n\n" + "No Opened Port on desired range")
     else:

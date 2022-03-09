@@ -1,0 +1,9 @@
+[
+    "lfi",
+    "Metamorph LFI Module V1.0",
+    "modules\\LFI.py",
+    "\nSyntaxe : module lfi <url.xml>\nInfo: XML generated will contains all urls vulnerable in <url>, payloads used in <payload> and the number of LFI found in <Number>\n    \n    ",
+    {
+        "urlXML": "xmlFileOfUrl"
+    }
+]
